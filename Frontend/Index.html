@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PR Review Agent</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+    textarea {
+      width: 100%;
+      height: 200px;
+      margin-top: 10px;
+      padding: 10px;
+      font-size: 14px;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    pre {
+      background: #f4f4f4;
+      padding: 15px;
+      white-space: pre-wrap;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Automated PR Review Agent</h1>
+  <p>Paste your Git diff below:</p>
+
+  <textarea id="diffInput" placeholder="Paste your diff here..."></textarea>
+  <br />
+
+  <button onclick="sendDiff()">Review Diff</button>
+
+  <h2>Response:</h2>
+  <pre id="responseBox">Response will appear here...</pre>
+
+  <script>
+    async function sendDiff() {
+      const diff = document.getElementById("diffInput").value;
+      const responseBox = document.getElementById("responseBox");
+
+      responseBox.textContent = "Processing...";
+
+      try {
+        const res = await fetch("http://127.0.0.1:8000/review/diff", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ diff }),
+        });
+
+        const data = await res.json();
+        responseBox.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        responseBox.textContent = "Error: " + err.toString();
+      }
+    }
+  </script>
+</body>
+</html>
