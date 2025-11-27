@@ -45,27 +45,35 @@
   <pre id="responseBox">Response will appear here...</pre>
 
   <script>
-    async function sendDiff() {
-      const diff = document.getElementById("diffInput").value;
-      const responseBox = document.getElementById("responseBox");
+  async function sendDiff() {
+    const diff = document.getElementById("diffInput").value;
+    const responseBox = document.getElementById("responseBox");
 
-      responseBox.textContent = "Processing...";
+    responseBox.textContent = "Processing...";
 
-      try {
-        const res = await fetch("http://127.0.0.1:8000/review/diff", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ diff }),
-        });
+    try {
+      const res = await fetch("https://pr-review-agent-njlv.onrender.com/review/diff", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ diff }),
+      });
 
-        const data = await res.json();
-        responseBox.textContent = JSON.stringify(data, null, 2);
-      } catch (err) {
-        responseBox.textContent = "Error: " + err.toString();
+      if (!res.ok) {
+        // Read error text for easier debugging
+        const errorText = await res.text();
+        responseBox.textContent = `Error ${res.status}: ${errorText}`;
+        return;
       }
+
+      const data = await res.json();
+      responseBox.textContent = JSON.stringify(data, null, 2);
+    } catch (err) {
+      responseBox.textContent = "Error: " + err.toString();
     }
-  </script>
+  }
+</script>
+
 </body>
 </html>
